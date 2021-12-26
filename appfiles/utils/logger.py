@@ -28,14 +28,15 @@ LOGGER_LEVELS = [
 
 
 class logger():
-    def __init__(self, autoreset=True, fmt="[%(time)s] [%(fileName)s:%(lineNbr)s] [Thread:(%(threadName)s)] %(levelName)s: %(message)s", custom_exception_hook=True, level=0):
+    def __init__(self, autoreset=True, fmt="", custom_exception_hook=True, level=0):
         if custom_exception_hook:
             sys.excepthook = self.custom_handler
         colorama.init(autoreset=autoreset)
 
         self.level = level
         # default config
-        self.defaultFormat = fmt
+        self.defaultFormat = \
+            "[%(time)s] [%(fileName)s:%(lineNbr)s] [Thread:(%(threadName)s)] %(levelName)s: %(message)s"
 
         self.levelsDefaultColors = {
             "debug": STR_TO_COLORAMA["green"],

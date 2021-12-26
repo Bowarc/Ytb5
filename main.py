@@ -27,7 +27,7 @@ if __name__ == "__main__":
     # This creates the Main Event Handler for a PyQt Application
     qapp = QApplication([])
 
-    l = logger.logger(level=1)
+    l = logger.logger(level=0)
 
     app = app.App(l)
     try:
