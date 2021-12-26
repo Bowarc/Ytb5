@@ -6,3 +6,6 @@ class Event:
         self.type = type_
 
         self.msg = msg
+
+    def display(self):
+        return f"Type: {self.type}, Msg: {self.msg}"

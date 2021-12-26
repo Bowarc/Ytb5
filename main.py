@@ -4,7 +4,8 @@ from PyQt5.QtWidgets import QApplication
 
 import appfiles.uis.ui as ui
 
-import appfiles.utils.downloader as downloader
+import appfiles.utils.app as app
+import appfiles.utils.logger as logger
 
 import win32gui
 import win32con
@@ -24,12 +25,14 @@ with open("RapportDeBugs.txt", "w") as f:
 
 if __name__ == "__main__":
     # This creates the Main Event Handler for a PyQt Application
-    app = QApplication([])
+    qapp = QApplication([])
 
+    l = logger.logger(level=1)
+
+    app = app.App(l)
     try:
         # close_console()
-        window = ui.Ytb5()
-        window.show()
+        app.run()
     except Exception as e:
         import traceback
         import sys
@@ -38,5 +41,4 @@ if __name__ == "__main__":
         with open("RapportDeBugs.txt", "w") as f:
             f.write(traceback.format_exc())
         sys.exit()
-
-    app.exec()
+    qapp.exec()

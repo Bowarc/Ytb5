@@ -25,8 +25,10 @@ class DownloadArgs:
 class Downloader(QObject):
     eventSignal = pyqtSignal(event.Event)
 
-    def __init__(self):
+    def __init__(self, logger):
         QObject.__init__(self)
+
+        self.logger = logger
 
     def customYtdlHook(self, d):
         # if d["status"] == "finished":
@@ -69,3 +71,6 @@ class Downloader(QObject):
     def download(self, options, link):
         with yt_dlp.YoutubeDl(options) as ytdl:
             ytdl.download([link])
+
+    def test_signal(self):
+        self.eventSignal.emit(event.Event("info", "this is a test signal"))

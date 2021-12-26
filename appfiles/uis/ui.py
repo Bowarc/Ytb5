@@ -1,15 +1,14 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal
 
-import appfiles.utils.assets as assets
-import appfiles.utils.downloader as downloader
-import appfiles.utils.app as app
 import appfiles.utils.event as event
 
 
 class Ytb5(QWidget):
-    def __init__(self):
+    eventSignal = pyqtSignal(event.Event)
+
+    def __init__(self, assets, logger):
         QWidget.__init__(self)
         self.setWindowFlags(
             Qt.Widget | QtCore.Qt.FramelessWindowHint)
@@ -17,14 +16,10 @@ class Ytb5(QWidget):
 
         self.clicked = False
 
-        self.app = app.App(self)
-
-        self.assets = assets.Assets()
-        self.downloader = downloader.Downloader()
-        self.downloader.eventSignal.connect(self.downloadHandler)
+        self.logger = logger
 
         self.setupUi()
-        self.applyQss("main")
+        self.applyQss(assets.getQss(f"main.qss"))
 
     def setupUi(self):
 
@@ -89,10 +84,10 @@ class Ytb5(QWidget):
     def mouseReleaseEvent(self, event):
         self.clicked = False
 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, qevent):
         # make sure that the mouse is not colliding with the format combo box
         # else the window movement will by laggy as the combo box clic event will be also triggerd
-        point = (event.screenPos().x(), event.screenPos().y())
+        point = (qevent.screenPos().x(), qevent.screenPos().y())
         x1 = self.formatComboBox.x()
         y1 = self.formatComboBox.y()
         x2 = x1 + self.formatComboBox.width()
@@ -100,18 +95,17 @@ class Ytb5(QWidget):
 
         if not (x1 < point[0] and point[0] < x2 and y1 < point[1] and point[1] < y2):
             if self.clicked:
-                dx = self.old_pos.x() - event.screenPos().x()
-                dy = self.old_pos.y() - event.screenPos().y()
+                dx = self.old_pos.x() - qevent.screenPos().x()
+                dy = self.old_pos.y() - qevent.screenPos().y()
                 self.move(self.pos().x() - dx, self.pos().y() - dy)
 
-        self.old_pos = event.screenPos()
-        return QWidget.mouseMoveEvent(self, event)
+                self.eventSignal.emit(event.Event("info", "moving the window"))
 
-    def applyQss(self, QssFile):
-        with open(self.assets.getQss(f"{QssFile}.qss"), "r") as f:
+        self.old_pos = qevent.screenPos()
+        return QWidget.mouseMoveEvent(self, qevent)
+
+    def applyQss(self, filePath):
+        with open(filePath, "r") as f:
             self.setStyleSheet(f.read())
 
         # QMetaObject.connectSlotsByName(self)
-    @pyqtSlot(event.Event)
-    def downloadHandler(self, event):
-        print(event)
