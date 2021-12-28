@@ -98,6 +98,7 @@ class Downloader(QObject):
             "noplaylist": dlArgs.noPlaylist,
             "outtmpl": f"{dlArgs.path}/%(title)s-%(id)s.%(ext)s",
             "quiet": True,
+            "noprogress": True
         }
         try:
             self.eventSignal.emit(event.Event("info", "downloadStart"))
@@ -116,12 +117,3 @@ class Downloader(QObject):
 
     def test_signal(self):
         self.eventSignal.emit(event.Event("info", "this is a test signal"))
-
-
-options = {
-    "format": dlArgs.format.name,
-    "progress_hooks": [self.customYtdlHook],
-    "noplaylist": dlArgs.noPlaylist,
-    "outtmpl": f"{dlArgs.path}/%(title)s-%(id)s.%(ext)s",
-    "quiet": True,
-}
