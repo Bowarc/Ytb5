@@ -76,6 +76,8 @@ class logger():
 
     def critical(self, message="", custom_data: dict = {}):
         self.log(message, "CRITICAL", custom_data)
+        self.log("Stopping the program", "CRITICAL", custom_data)
+        sys.exit(1)
 
     def log(self, message: str = "", levelName: str = "", custom_data: dict = {}):
         if levelName == "":
@@ -86,10 +88,11 @@ class logger():
         data = self.getData()
         data["message"] = message
         data["levelName"] = levelName
+        # data["fileName"] =
         for k, v in custom_data.items():
             data[k] = custom_data[k]
-        cData = self.colorData(data)
-        sys.stdout.write(self.fmt % cData + "\n")
+        coloredData = self.colorData(data)
+        sys.stdout.write(self.fmt % coloredData + "\n")
 
     def custom_handler(self, type, value, tb):
         goodtb = repr(traceback.format_tb(tb)[-1])
@@ -97,7 +100,7 @@ class logger():
         line = goodtb[goodtb.find('", line ')+8:goodtb.find(', in ')]
         func = goodtb[goodtb.find('    ')+4:-3]
         custom_data = {
-            "fileName": os.path.basename(path),
+            "fileName": os.path.splitext(os.path.basename(path))[0],
             "lineNbr": line,
         }
         self.error("Uncaught exception: {0}: {1}".format(
@@ -107,7 +110,7 @@ class logger():
         data = {
             "time": str(datetime.datetime.now())[11:19],
             "date": str(datetime.datetime.now())[:10],
-            "fileName": os.path.basename(inspect.stack()[3].filename),
+            "fileName": os.path.splitext(os.path.basename(inspect.stack()[3].filename))[0],
             "lineNbr": str(inspect.stack()[3][2]),
             "processName": multiprocessing.current_process().name,
             "threadName": threading.current_thread().name,

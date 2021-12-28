@@ -3,15 +3,23 @@ from PyQt5.QtCore import (
 )
 
 import appfiles.utils.event as event
-
+import urllib.request
+import yt_dlp
 import sys
+import os
+
+
+DEFAULT_OUTPUT_PATH = sys.path[0].replace("\\", "/") + "/UserFiles"
 
 
 class DownloadFormat:
-    def __init__(self, title: str, message: str, name: str):
+    def __init__(self, title: str, name: str, ext: str,):
         self.title = title
-        self.message = message
         self.name = name
+        self.ext = ext
+
+    def display(self):
+        return f"DownloadFormat object with args [title: {self.title}], [name: {self.name}], [extension: {self.ext}]"
 
 
 class DownloadArgs:
@@ -21,14 +29,42 @@ class DownloadArgs:
         self.path = path
         self.format = format_
 
+    def display(self):
+        return f"DownloadArgs object with args [link: {self.link}], [noPlaylist: {self.noPlaylist}], [path: {self.path}], [format: {self.format.display()}]"
+
+    def isUsable(self):
+        usable = True
+
+        if urllib.request.urlopen("https://www.youtube.com/watch?v=2vojalv7gqY").getcode() != 200:
+            usable = False
+        if not os.path.exists(self.path):
+            usable = False
+
+        return usable
+
 
 class Downloader(QObject):
     eventSignal = pyqtSignal(event.Event)
 
-    def __init__(self, logger):
+    def __init__(self, logger, app):
         QObject.__init__(self)
 
         self.logger = logger
+
+        self.outputPath = DEFAULT_OUTPUT_PATH
+
+        self.app = app
+
+        self.downloadFormats = [
+            DownloadFormat(title="Best video and sound quality",
+                           name="best", ext="mp4"),
+            DownloadFormat(title="Best video quality with no sound",
+                           name="bestvideo", ext="mp4"),
+            DownloadFormat(title="Best audio quality with no video",
+                           name="bestvideo", ext="mp3"),
+        ]
+
+        dlArgs = None
 
     def customYtdlHook(self, d):
         # if d["status"] == "finished":
@@ -40,10 +76,15 @@ class Downloader(QObject):
                 "\x1b[0;94m", "").replace("\x1b[0m", "").replace(" ", ""))
             self.eventSignal.emit(newEvent)
 
-    def downloadHandler(self, dlArgs):
+    def downloadHandler(self):
         # link = dlArgs.link
         # newFileName = dlArgs.newFileName
         # noPlaylist = dlArgs.noPlaylist
+        dlArgs = self.dlArgs
+        if not dlArgs:
+            self.eventSignal.emit(event.Event("closeThread", "noDlArgsError"))
+
+            return 1
 
         if dlArgs.link == "":
 
@@ -56,7 +97,7 @@ class Downloader(QObject):
             "progress_hooks": [self.customYtdlHook],
             "noplaylist": dlArgs.noPlaylist,
             "outtmpl": f"{dlArgs.path}/%(title)s-%(id)s.%(ext)s",
-            'quiet': True,
+            "quiet": True,
         }
         try:
             self.eventSignal.emit(event.Event("info", "downloadStart"))
@@ -67,10 +108,20 @@ class Downloader(QObject):
             print(e)
             return 1
         self.eventSignal.emit(event.Event("closeThread", "downloadEnd"))
+        self.dlArgs = None
 
     def download(self, options, link):
-        with yt_dlp.YoutubeDl(options) as ytdl:
+        with yt_dlp.YoutubeDL(options) as ytdl:
             ytdl.download([link])
 
     def test_signal(self):
         self.eventSignal.emit(event.Event("info", "this is a test signal"))
+
+
+options = {
+    "format": dlArgs.format.name,
+    "progress_hooks": [self.customYtdlHook],
+    "noplaylist": dlArgs.noPlaylist,
+    "outtmpl": f"{dlArgs.path}/%(title)s-%(id)s.%(ext)s",
+    "quiet": True,
+}

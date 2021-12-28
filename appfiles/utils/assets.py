@@ -17,3 +17,9 @@ class Assets:
         relativePath = self.ressourcePath + "qss\\" + fileName
 
         return os.path.join(basePath, relativePath)
+
+    def getFont(self, fileName):
+        basePath = os.path.abspath(".")
+        relativePath = self.ressourcePath + "fonts\\" + fileName
+
+        return os.path.join(basePath, relativePath)
