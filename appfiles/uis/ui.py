@@ -221,8 +221,6 @@ class Ytb5(QWidget):
         with open(filePath, "r") as f:
             self.setStyleSheet(f.read())
 
-        # QMetaObject.connectSlotsByName(self)
-
     def log(self, msg: consoleMessage):
         console = self.consoleTextEdit
         console.setFontPointSize(msg.fontSize)
@@ -253,12 +251,6 @@ class Ytb5(QWidget):
         dummyLabel.deleteLater()
         # self.removeWidget(dummyLabel)
         pathList = path.split("/")
-
-        # self.logger.debug(path)
-
-        # self.logger.debug(str(pathList))
-        # self.logger.debug(str(pathList[:int(len(pathList)/2)]))
-        # self.logger.debug(str(pathList[int(len(pathList)/2):]))
 
         usablePath = path + "/"
 

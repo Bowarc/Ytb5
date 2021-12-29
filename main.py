@@ -10,11 +10,10 @@ import appfiles.utils.logger as logger
 import os
 
 if __name__ == "__main__":
-    # This creates the Main Event Handler for a PyQt Application
     qapp = QApplication([])
+
     l = logger.logger(level=0, logFile="Ytb5.log")
 
-    # raise Exception("salut", "a tosu")
     app = app.App(l)
 
     app.run()
