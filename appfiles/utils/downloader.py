@@ -8,7 +8,6 @@ import yt_dlp
 import sys
 import os
 
-
 DEFAULT_OUTPUT_PATH = sys.path[0].replace("\\", "/") + "/UserFiles"
 
 
@@ -81,9 +80,6 @@ class Downloader(QObject):
             self.eventSignal.emit(newEvent)
 
     def downloadHandler(self):
-        # link = dlArgs.link
-        # newFileName = dlArgs.newFileName
-        # noPlaylist = dlArgs.noPlaylist
         dlArgs = self.dlArgs
         if not dlArgs:
             self.eventSignal.emit(event.Event("closeThread", "noDlArgsError"))
@@ -118,6 +114,3 @@ class Downloader(QObject):
     def download(self, options, link):
         with yt_dlp.YoutubeDL(options) as ytdl:
             ytdl.download([link])
-
-    def test_signal(self):
-        self.eventSignal.emit(event.Event("info", "this is a test signal"))

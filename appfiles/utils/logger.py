@@ -173,15 +173,9 @@ class logger():
 
 if __name__ == "__main__":
     l = logger()
-    l.info("This is a demo run, i havn't done the tutorial yet, please contact Bowarc#4159 on discord for more informations\n\n")
+    l.info("This is a demo run, i havn't done the tutorial yet\nplease contact Bowarc#4159 on discord for more informations\n")
     l.debug("This is a debug message")
     l.info("This is an informational message")
     l.warning("This is a warning message")
     l.error("This is an error message")
     l.critical("This is a critical message")
-
-    # logger.debug("This is a debug message")
-    # logger.info("This is an informational message")
-    # logger.warning("Careful! Something does not look right")
-    # logger.error("You have encountered an error")
-    # logger.critical("You are in trouble")

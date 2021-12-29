@@ -19,7 +19,6 @@ class App(QObject):
 
         self.downloader = downloader.Downloader(self.logger, self)
         self.downloader.eventSignal.connect(self.downloaderEvents)
-        self.downloader.test_signal()
         self.downloaderThread = self.createThread("downloader")
 
         self.assets = assets.Assets()
@@ -90,7 +89,6 @@ class App(QObject):
                 handled = True
         if not handled:
             self.logger.warning(f"Ui event not handled: {event.display()}")
-            # print(event.display())
 
     def downloadHandle(self):
         link = self.ui.linkLineEdit.text()
@@ -197,6 +195,6 @@ class App(QObject):
                 self.logger.info(f"Downloader thread has been stopped")
             else:
                 pass
-                # self.logger.info(f"Downloader thread has been stopped")
+                # self.logger.info(f"Downloader thread wasn't runnning")
         else:
             self.logger.critical(f"Given thread name isn't handled: {thread}.")
