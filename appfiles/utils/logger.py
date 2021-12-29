@@ -131,7 +131,7 @@ class logger():
         }
         msg = f"Uncaught exception: {str(value.__class__.__name__)}: {str(value)}"
         self.error(msg, custom_data)
-        self.logToFile(msg)
+        self.logToFile(msg, "a")
 
     def getData(self):
         data = {
