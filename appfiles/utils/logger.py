@@ -28,12 +28,16 @@ LOGGER_LEVELS = [
 
 
 class logger():
-    def __init__(self, autoreset=True, fmt="", custom_exception_hook=True, level=0):
+    def __init__(self, autoreset=True, fmt="", custom_exception_hook=True, level=0, logFile=""):
         if custom_exception_hook:
             sys.excepthook = self.custom_handler
         colorama.init(autoreset=autoreset)
 
         self.level = level
+
+        self.logFile = logFile
+        self.logToFile("", "w")
+
         # default config
         self.defaultFormat = \
             "[%(time)s] [%(fileName)s:%(lineNbr)s] [Thread:(%(threadName)s)] %(levelName)s: %(message)s"
@@ -49,7 +53,7 @@ class logger():
         self.fieldDefaultColors = {
             "time": STR_TO_COLORAMA["green"],
             "date": STR_TO_COLORAMA["green"],
-            "fileName": STR_TO_COLORAMA["mangenta"],
+            "fileName": STR_TO_COLORAMA["red"],
             "lineNbr": STR_TO_COLORAMA["cyan"],
             "processName": STR_TO_COLORAMA["mangenta"],
             "threadName": STR_TO_COLORAMA["green"],
@@ -61,6 +65,16 @@ class logger():
             self.fmt = self.defaultFormat
         else:
             self.fmt = fmt
+
+        self.enabled = True
+
+        self.tryUse()
+
+    def tryUse(self):
+        try:
+            sys.stdout.write("")
+        except Exception as e:
+            self.enabled = False
 
     def debug(self, message="", custom_data: dict = {}):
         self.log(message, "DEBUG", custom_data)
@@ -80,19 +94,31 @@ class logger():
         sys.exit(1)
 
     def log(self, message: str = "", levelName: str = "", custom_data: dict = {}):
-        if levelName == "":
-            return
-        if LOGGER_LEVELS.index(levelName) < self.level:
-            # The level is too low, don't do anything
-            return
-        data = self.getData()
-        data["message"] = message
-        data["levelName"] = levelName
-        # data["fileName"] =
-        for k, v in custom_data.items():
-            data[k] = custom_data[k]
-        coloredData = self.colorData(data)
-        sys.stdout.write(self.fmt % coloredData + "\n")
+        if self.enabled or self.logFile != "":
+            if levelName == "":
+                return
+            if LOGGER_LEVELS.index(levelName) < self.level:
+                # The level is too low, don't do anything
+                return
+            data = self.getData()
+            data["message"] = message
+            data["levelName"] = levelName
+            data.update(custom_data)
+
+            # get the length of the text without the message
+            if levelName != "ERROR" and levelName != "CRITICAL":
+                cloned_data = data
+                cloned_data["message"] = ""
+                test_without_message_len = len(self.fmt % cloned_data)+2
+                #
+                data["message"] = message.replace(
+                    "\n", "\n" + " "*test_without_message_len)
+            coloredData = self.colorData(data)
+
+            if self.enabled:
+                sys.stdout.write(self.fmt % coloredData + "\n")
+            if self.logFile != "":
+                self.logToFile(self.fmt % data + "\n", "a")
 
     def custom_handler(self, type, value, tb):
         goodtb = repr(traceback.format_tb(tb)[-1])
@@ -103,8 +129,9 @@ class logger():
             "fileName": os.path.splitext(os.path.basename(path))[0],
             "lineNbr": line,
         }
-        self.error("Uncaught exception: {0}: {1}".format(
-            str(value.__class__.__name__), str(value)), custom_data)
+        msg = f"Uncaught exception: {str(value.__class__.__name__)}: {str(value)}"
+        self.error(msg, custom_data)
+        self.logToFile(msg)
 
     def getData(self):
         data = {
@@ -137,6 +164,11 @@ class logger():
 
     def trandslateColors(self, colors):
         pass
+
+    def logToFile(self, message, mode):
+        if self.logFile != "":
+            with open(self.logFile, mode) as f:
+                f.write(message)
 
 
 if __name__ == "__main__":

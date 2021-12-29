@@ -5,8 +5,9 @@ from PyQt5.QtCore import Qt, pyqtSlot, pyqtSignal
 import appfiles.utils.event as event
 
 UI_CONSOLE_COLORS = {
-    "error": (255, 100, 100),
-    "debug": (100, 255, 100)
+    "red": (255, 100, 100),
+    "green": (100, 255, 100),
+    "lightblue": (50, 150, 200)
 }
 
 TITLE = "Welcome on Ytb5"
@@ -67,7 +68,8 @@ class Ytb5(QWidget):
         self.quitButton = QtWidgets.QPushButton("Quit", self)
         self.quitButton.setGeometry(QtCore.QRect(
             quitButtonX, quitButtonY, quitButtonW, quitButtonH))
-        self.quitButton.clicked.connect(self.close)
+        self.quitButton.clicked.connect(
+            lambda: self.eventSignal.emit(event.Event("trigger", "quit")))
         self.quitButton.setObjectName("quitButton")
 
         formatComboBoxX = defaultItem2X
@@ -160,10 +162,22 @@ class Ytb5(QWidget):
         self.consoleTextEdit.setObjectName("consoleTextEdit")
 
         self.log(consoleMessage(text="Console connected.",
-                                color=UI_CONSOLE_COLORS["debug"], fontSize=20))
+                                color=UI_CONSOLE_COLORS["green"], fontSize=20))
+
+        downloadButtonX = 460
+        downloadButtonY = 200
+        downloadButtonW = 111
+        downloadButtonH = 61
+
+        self.progress = QtWidgets.QProgressBar(self)
+        self.progress.setGeometry(QtCore.QRect(
+            downloadButtonX, downloadButtonY, downloadButtonW, downloadButtonH))
+        self.progress.setMaximum(100)
+        # self.progress.setValue(50)
 
         self.downloadButton = QtWidgets.QPushButton("Download", self)
-        self.downloadButton.setGeometry(QtCore.QRect(460, 200, 111, 61))
+        self.downloadButton.setGeometry(QtCore.QRect(
+            downloadButtonX, downloadButtonY, downloadButtonW, downloadButtonH))
         self.downloadButton.clicked.connect(
             lambda: self.eventSignal.emit(event.Event("trigger", "downloadButton")))
         self.downloadButton.setObjectName("downloadButton")

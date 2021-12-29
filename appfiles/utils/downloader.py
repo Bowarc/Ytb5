@@ -30,14 +30,18 @@ class DownloadArgs:
         self.format = format_
 
     def display(self):
-        return f"DownloadArgs object with args [link: {self.link}], [noPlaylist: {self.noPlaylist}], [path: {self.path}], [format: {self.format.display()}]"
+        return f"DownloadArgs object with args\n[link: {self.link}]\n[noPlaylist: {self.noPlaylist}]\n[path: {self.path}]\n[format: {self.format.display()}]"
 
     def isUsable(self):
         usable = True
+        try:
 
-        if urllib.request.urlopen("https://www.youtube.com/watch?v=2vojalv7gqY").getcode() != 200:
-            usable = False
-        if not os.path.exists(self.path):
+            code = urllib.request.urlopen(self.link).getcode()
+            if code != 200:
+                usable = False
+            else:
+                usable = True
+        except Exception as e:
             usable = False
 
         return usable
@@ -61,7 +65,7 @@ class Downloader(QObject):
             DownloadFormat(title="Best video quality with no sound",
                            name="bestvideo", ext="mp4"),
             DownloadFormat(title="Best audio quality with no video",
-                           name="bestvideo", ext="mp3"),
+                           name="bestaudio", ext="mp3"),
         ]
 
         dlArgs = None
@@ -98,7 +102,7 @@ class Downloader(QObject):
             "noplaylist": dlArgs.noPlaylist,
             "outtmpl": f"{dlArgs.path}/%(title)s-%(id)s.%(ext)s",
             "quiet": True,
-            "noprogress": True
+            "noprogress": True,
         }
         try:
             self.eventSignal.emit(event.Event("info", "downloadStart"))
@@ -106,7 +110,7 @@ class Downloader(QObject):
             self.eventSignal.emit(event.Event("info", "downloadEnd"))
         except Exception as e:
             self.eventSignal.emit(event.Event("closeThread", e))
-            print(e)
+            self.logger.error(str(e))
             return 1
         self.eventSignal.emit(event.Event("closeThread", "downloadEnd"))
         self.dlArgs = None

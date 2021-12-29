@@ -78,6 +78,17 @@ QPushButton:hover
           stop:0 rgba(0,139,234,1));
 }
 
+QProgressBar {
+    border: 2px solid rgba(121, 89, 44,0);
+    /*border-radius: 10px;*/
+    text-align: center;
+    background: rgba(0,0,0,0);
+    color: transparent;
+}
+QProgressBar::chunk {
+    background: rgba(0,139,234,0.1);
+    /*border-radius: 8px;*/
+}
 
 QComboBox
 { 
@@ -110,7 +121,6 @@ QComboBox:hover
         stop:0.55 rgba(180,180,180,0.0), 
         stop:0.45 rgba(180,180,180,0.0), 
         stop:0 rgba(0,139,234,1));
-
 }
 
 QComboBox:on
