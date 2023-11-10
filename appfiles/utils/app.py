@@ -102,7 +102,7 @@ class App(QObject):
             return 1
         dlArgs = downloader.DownloadArgs(
             link=link,
-            noPlaylist=True,
+            noPlaylist=False,
             path=outputPath,
             format_=format_,
         )

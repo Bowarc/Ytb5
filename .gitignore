@@ -1,0 +1,3 @@
+/userfiles
+**/*.log
+**/__pycache__/

@@ -10,6 +10,8 @@ import appfiles.utils.logger as logger
 import os
 
 if __name__ == "__main__":
+    import sys
+    print(sys.version)
     qapp = QApplication([])
 
     l = logger.logger(level=0, logFile="Ytb5.log")

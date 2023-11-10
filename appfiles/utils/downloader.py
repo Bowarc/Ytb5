@@ -96,9 +96,11 @@ class Downloader(QObject):
             "format": dlArgs.format.name,
             "progress_hooks": [self.customYtdlHook],
             "noplaylist": dlArgs.noPlaylist,
-            "outtmpl": f"{dlArgs.path}/%(title)s-%(id)s.%(ext)s",
+            "outtmpl": f"{dlArgs.path}/%(title)s.%(ext)s",
             "quiet": True,
             "noprogress": True,
+            'ignoreerrors': True,
+            'continue_dl': True,
         }
         try:
             self.eventSignal.emit(event.Event("info", "downloadStart"))

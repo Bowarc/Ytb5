@@ -92,8 +92,8 @@ class Ytb5(QWidget):
         formatLabelX = formatComboBoxX - formatLabelW - \
             defaultDistanceBetweenSameRowItems
         # difference between the height of the label and the height of the combo box
-        formatLabelY = formatComboBoxY - \
-            ((formatLabelH - formatComboBoxH) / 2)
+        formatLabelY = int(formatComboBoxY -
+                           ((formatLabelH - formatComboBoxH) / 2))
 
         self.formatLabel = QtWidgets.QLabel("Format:", self)
         self.formatLabel.setGeometry(QtCore.QRect(
@@ -203,8 +203,8 @@ class Ytb5(QWidget):
 
         if not (x1 < point[0] and point[0] < x2 and y1 < point[1] and point[1] < y2):
             if self.clicked:
-                dx = self.old_pos.x() - qevent.screenPos().x()
-                dy = self.old_pos.y() - qevent.screenPos().y()
+                dx = int(self.old_pos.x() - qevent.screenPos().x())
+                dy = int(self.old_pos.y() - qevent.screenPos().y())
                 self.move(self.pos().x() - dx, self.pos().y() - dy)
 
                 if False:  # Send a moving window event
@@ -249,7 +249,6 @@ class Ytb5(QWidget):
         dummyLabel.setText("salut")
         # dummyLabel.setVisible(False)
         dummyLabel.deleteLater()
-        # self.removeWidget(dummyLabel)
         pathList = path.split("/")
 
         usablePath = path + "/"
